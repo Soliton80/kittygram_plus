@@ -1,26 +1,26 @@
-import webcolors
+# import webcolors
 import datetime as dt
 from rest_framework import serializers
 
-from .models import Achievement, Cat, Owner, AchievementCat
+from .models import Achievement, Cat, Owner, AchievementCat, CHOICES
 
 
-class Hex2NameColor(serializers.Field):  # собственное поле в сериализатора
-    # При чтении данных ничего не меняем - просто возвращаем как есть
-    def to_representation(self, value):
-        return value
+# class Hex2NameColor(serializers.Field):  # собственное поле в сериализатора
+#     # При чтении данных ничего не меняем - просто возвращаем как есть
+#     def to_representation(self, value):
+#         return value
 
-    # При записи код цвета конвертируется в его название
-    def to_internal_value(self, data):
-        # Доверяй, но проверяй
-        try:
-            # Если имя цвета существует, то конвертируем код в название
-            data = webcolors.hex_to_name(data)
-        except ValueError:
-            # Иначе возвращаем ошибку
-            raise serializers.ValidationError('Для этого цвета нет имени')
-        # Возвращаем данные в новом формате
-        return data
+#     # При записи код цвета конвертируется в его название
+#     def to_internal_value(self, data):
+#         # Доверяй, но проверяй
+#         try:
+#             # Если имя цвета существует, то конвертируем код в название
+#             data = webcolors.hex_to_name(data)
+#         except ValueError:
+#             # Иначе возвращаем ошибку
+#             raise serializers.ValidationError('Для этого цвета нет имени')
+#         # Возвращаем данные в новом формате
+#         return data
 
 
 class AchivementSerializer(serializers.ModelSerializer):
@@ -32,11 +32,12 @@ class AchivementSerializer(serializers.ModelSerializer):
 
 
 class CatSerializer(serializers.ModelSerializer):
-    achievements = AchivementSerializer(many=True, required=False)
+    achievements = AchivementSerializer(many=True)
     # Убрали read_only=True
     # Убрали owner = serializers.StringRelatedField(read_only=True)
     age = serializers.SerializerMethodField()
-    color = Hex2NameColor()
+    # Теперь поле примет только значение, упомянутое в списке CHOICES
+    color = serializers.ChoiceField(choices=CHOICES)
 
     class Meta:
         model = Cat
