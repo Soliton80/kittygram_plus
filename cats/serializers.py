@@ -24,6 +24,7 @@ from .models import Achievement, Cat, Owner, AchievementCat, CHOICES
 
 
 class AchivementSerializer(serializers.ModelSerializer):
+    # Подмена выдачи имени в JSON
     achievement_name = serializers.CharField(source='name')
 
     class Meta:
