@@ -1,26 +1,17 @@
 # import webcolors
+from dataclasses import field
 import datetime as dt
 from rest_framework import serializers
 
 from .models import Achievement, Cat, Owner, AchievementCat, CHOICES
 
 
-# class Hex2NameColor(serializers.Field):  # собственное поле в сериализатора
-#     # При чтении данных ничего не меняем - просто возвращаем как есть
-#     def to_representation(self, value):
-#         return value
+class CatListSerializer(serializers.ModelSerializer):
+    color = serializers.ChoiceField(choices=CHOICES)
 
-#     # При записи код цвета конвертируется в его название
-#     def to_internal_value(self, data):
-#         # Доверяй, но проверяй
-#         try:
-#             # Если имя цвета существует, то конвертируем код в название
-#             data = webcolors.hex_to_name(data)
-#         except ValueError:
-#             # Иначе возвращаем ошибку
-#             raise serializers.ValidationError('Для этого цвета нет имени')
-#         # Возвращаем данные в новом формате
-#         return data
+    class Meta:
+        model = Cat
+        fields = ('id', 'name', 'color')
 
 
 class AchivementSerializer(serializers.ModelSerializer):
@@ -34,7 +25,7 @@ class AchivementSerializer(serializers.ModelSerializer):
 
 class CatSerializer(serializers.ModelSerializer):
     achievements = AchivementSerializer(many=True)
-    # Убрали read_only=True
+    # Убрали read_only=True Для работы функции create на запись
     # Убрали owner = serializers.StringRelatedField(read_only=True)
     age = serializers.SerializerMethodField()
     # Теперь поле примет только значение, упомянутое в списке CHOICES
